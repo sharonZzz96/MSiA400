@@ -1,0 +1,67 @@
+---
+title: "lab3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Q1 
+a. One problem in Monte Carlo methods is in obtaining sample points from complex distributions p(x). Many Monte Carlo methods can help us sample points from p(x).
+
+b. Metropolis Hastings Algorithm generalizes Metropolis Algorithm. Metropolis Hastings Algorithm does not require q(.|.) to be symmetric (q(a1|a2) does not have to equal q(a2|a1)).
+
+c. Both methods can reduce multicollinearity, reduce overfitting. Ridge can shrink coefficient to zero. Lasso has the effect of forcing some of the coefficient estimates to be exactly zero. To some extent, Lasso can do variable selection.
+
+d. Independence of irrelevant alternatives (IIA): the ratio of the probabilities of choosing two alternatives is independent of the presence or attributes of any other alternative. 
+
+
+# Q2 a
+```{r}
+gas <- read.csv('gas_mileage.csv')
+library(quantreg)
+fit1 <- rq(Mpg~.,tau=seq(0.05, 0.95, by=0.05), data=gas)
+summary(fit1)
+```
+
+# b
+```{r}
+plot(fit1)
+```
+
+# c
+Width: At 5th quantile, a unit increase in width will reduce Mpg by 0.7 unit. But at 80th quantile, a unit increase in width will only reduce Mpg by 0.45 unit.
+
+Carb barrels: At 5th quantile, a unit increase in carb barrels will increase Mpg by 2.2 unit. But at 85th-95th quantile, the effect of carb barrels on Mpg is almost 0.
+
+Torque: At 5th quantile, a unit increase in torque will increase Mpg by 0.11 unit. At 85th-95th quantile, a unit increase in torque will increase Mpg by 0.25 unit.
+
+# d
+```{r}
+fit2 <- rq(Mpg ~ ., tau = .5, data = gas)
+summary(fit2, se = "boot")
+```
+
+
+# Q3 a
+```{r}
+car <- read.csv('car.csv')
+library(e1071)
+svm <- svm(factor(y) ~ income+car_age, data = car)
+summary(svm)
+```
+
+# b
+```{r}
+plot(svm, car, income~car_age)
+```
+
+# c
+```{r}
+newdata <- with(car, data.frame(income = 50, car_age = 5))
+predicted <- predict(svm, newdata = newdata, type = "response")
+print(paste0('predicted category: ', predicted))
+```
+
+The family purchased a new car.
